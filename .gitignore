@@ -1,0 +1,27 @@
+# CMake build directories
+core/build/
+frontend_qt/build/
+
+# .NET build output
+frontend_avalonia/TlmAvalonia/bin/
+frontend_avalonia/TlmAvalonia/obj/
+
+# Python
+frontend_python/__pycache__/
+frontend_python/*.pyc
+*.pyc
+
+# Logs / temp output
+app_stdout.txt
+app_stderr.txt
+
+# Screenshots (コミット不要な作業用)
+*.png
+
+# Visual Studio
+.vs/
+*.user
+
+# OS
+Thumbs.db
+.DS_Store
