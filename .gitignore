@@ -1,0 +1,73 @@
+# ── Build directories ────────────────────────────────────────────────
+build/
+out/
+cmake-build-*/
+_deps/
+
+# ── Generated code (produced at build time by derive_and_export.py) ───
+generated/
+*.generated.hpp
+
+# ── Simulation output ────────────────────────────────────────────────
+output/
+*.csv
+
+# ── Generated media (regenerate locally; keep repo small) ────────────
+# NOTE: a small demo GIF for the README may be committed under docs/
+*.gif
+*.png
+*.mp4
+!docs/*.gif
+!docs/*.png
+
+# ── CMake ────────────────────────────────────────────────────────────
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+install_manifest.txt
+compile_commands.json
+
+# ── MSVC / Visual Studio ─────────────────────────────────────────────
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+.vs/
+x64/
+Debug/
+Release/
+*.obj
+*.exe
+*.pdb
+*.ilk
+
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+*.egg-info/
+
+# ── .NET / Avalonia ──────────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.nupkg
+*.nuget.props
+*.nuget.targets
+project.nuget.cache
+project.assets.json
+
+# ── Editors / OS ─────────────────────────────────────────────────────
+.claude/
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
