@@ -4,6 +4,20 @@ out/
 cmake-build-*/
 _deps/
 
+# ── Out-of-scope for this release (kept locally only) ────────────────
+# Unintegrated GUI frontends (not built by CMake, not in CI). Kept locally;
+# may be split into their own repo later. The published scope is the
+# symbolic-derivation → C++ codegen → sim → matplotlib visualiser pipeline.
+frontend_avalonia/
+frontend_qt/
+# Redundant visualiser variants — the supported one is python/visualizer.py.
+python/visualizer_matplotlib.py
+python/visualizer_pyqt6.py
+python/visualizer_pyside.py
+# Scratch debug images
+good.png
+問題.png
+
 # ── Generated code (produced at build time by derive_and_export.py) ───
 generated/
 *.generated.hpp
