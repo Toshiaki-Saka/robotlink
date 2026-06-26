@@ -85,7 +85,7 @@ python app_pyside6.py
 
 ## 【重要】Avalonia 11 の既知の落とし穴
 
-詳細は `AVALONIA_NOTES.md` を参照。核心だけ以下に示す。
+詳細は `docs/avalonia-notes.md` を参照。核心だけ以下に示す。
 
 ### 1. `HeaderedContentControl` は使わない
 FluentTheme でスタイルが崩れる。必ず `TextBlock + Border + StackPanel` で代替。
@@ -170,13 +170,12 @@ $p = Start-Process ".\Release\tlm_qt.exe" -PassThru -Wait
 `double-conversion.dll`, `z.dll`, `bz2.dll`, `freetype.dll`, `harfbuzz.dll`,
 `libpng16.dll`, `brotlidec.dll`, `brotlicommon.dll`
 
-詳細は `CLAUDE_qt6_troubleshooting1.md` を参照。
 
 ---
 
 ## Polyline が表示されないときのチェックリスト
 
-詳細は `TROUBLESHOOTING_SIGNAL_LINES.md` を参照。
+詳細は `docs/troubleshooting-signal-lines.md` を参照。
 
 1. `tlm_core.dll` がビルド出力（`bin\Release\net8.0\`）に存在するか
 2. ウィンドウ下部の StatusMessage を確認（`"Error"` があればシミュレーション失敗）
@@ -195,14 +194,11 @@ $p = Start-Process ".\Release\tlm_qt.exe" -PassThru -Wait
 | `frontend_avalonia/.../Native/TlmSolver.cs` | 計算ロジック（C++ DLL を呼ぶ） |
 | `frontend_avalonia/.../ViewModels/MainWindowViewModel.cs` | MVVM ViewModel |
 | `frontend_avalonia/.../Views/MainWindow.axaml` | UI レイアウト |
-| `AVALONIA_NOTES.md` | Avalonia 落とし穴の詳細リスト |
-| `TROUBLESHOOTING_SIGNAL_LINES.md` | 描画デバッグの体系的手順 |
+| `docs/avalonia-notes.md` | Avalonia 落とし穴の詳細リスト |
+| `docs/troubleshooting-signal-lines.md` | 描画デバッグの体系的手順 |
 
----
+## 実装メモ
 
-## 前のセッションからの引き継ぎ事項
-
-- Qt フロントエンドの実装をリファレンスとして Avalonia 版を開発している
-- 見た目・動作は Qt 版に合わせる方針
-- ワークスペース境界曲線（`WorkspaceOverlay`）はカスタムコントロール（`Control` サブクラス）として実装済み
-- Canvas サイズは現在 `580×580` ピクセル固定
+- Avalonia 版は Qt フロントエンドをリファレンスに、見た目・動作を合わせて実装。
+- ワークスペース境界曲線（`WorkspaceOverlay`）はカスタムコントロール
+  （`Control` サブクラス）として実装。Canvas サイズは `580×580` 固定。

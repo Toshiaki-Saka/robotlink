@@ -48,8 +48,14 @@ set_target_properties(tlm_core PROPERTIES
     SOVERSION 1
 )
 
-add_executable(tlm_core_smoke EXCLUDE_FROM_ALL tools/smoke_test.cpp)
-target_link_libraries(tlm_core_smoke PRIVATE tlm_core)
+# Regression test, registered with CTest. Guarded to the top-level project so
+# frontend builds (which pull core in via add_subdirectory) don't drag it in.
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    enable_testing()
+    add_executable(tlm_core_smoke tools/smoke_test.cpp)
+    target_link_libraries(tlm_core_smoke PRIVATE tlm_core)
+    add_test(NAME tlm_core_smoke COMMAND tlm_core_smoke)
+endif()
 
 install(TARGETS tlm_core
         RUNTIME DESTINATION bin

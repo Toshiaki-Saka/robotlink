@@ -1,8 +1,18 @@
-# Two-Link Manipulator Workspace demo — multi-frontend port (Windows-first)
+# Two-Link Manipulator — one C++ core, three language frontends
 
-A C++ implementation of the planar two-link manipulator workspace
-visualisation from `two_link_manipulator_workspace.py`, plus three GUI
-frontends that share the same native core.
+A minimal example of sharing **one dependency-free C++ numerical core over a
+stable C ABI** with three GUI frontends — Qt6 (C++), Avalonia (C#), and
+PySide6 / matplotlib (Python). The payload is a planar two-link manipulator
+(forward kinematics + workspace boundary); the *point* is the cross-language
+architecture, not the robotics.
+
+> **What this is.** A C-ABI multi-frontend **template**, not a robotics
+> library — the planar 2-link FK is textbook trigonometry chosen because it is
+> small and easy to verify. For the full treatment (3-DOF dynamics, SymPy →
+> C++ codegen, RK4 + computed-torque control) see the sibling **robotlink
+> (arm3dof)**; this `tlm` is its planar, FK-only little brother. The reusable
+> assets here are the clean C ABI and the Avalonia 11 / Qt6×vcpkg
+> troubleshooting notes under [`docs/`](docs/).
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐

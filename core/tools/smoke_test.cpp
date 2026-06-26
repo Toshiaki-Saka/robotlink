@@ -52,24 +52,33 @@ int main() {
         }
     }
 
-    // Workspace boundary smoke test
-    std::printf("\nWorkspace boundary check (-θ2 side, t2 ∈ [-π/2, 0]):\n");
+    // Workspace boundary checks (-θ2 side, t2 ∈ [-π/2, 0]).
+    std::printf("\nWorkspace boundary check:\n");
     TlmWorkspace* ws = tlm_core_compute_workspace(&cfg, cfg.theta2_min, 0.0, 100);
     if (!ws) { std::fprintf(stderr, "FAIL: workspace\n"); return 1; }
-    std::printf("    samples_per_curve = %d  (expect 100)\n",
-                tlm_core_ws_samples_per_curve(ws));
-    // Curve A: θ2 = -π/2 fixed, θ1 sweeps from -π/2 to π/2.
-    // At θ1 = 0, θ2 = -π/2: end = (1 + cos(-π/2), 0 + sin(-π/2)) = (1, -1).
-    // That's the middle sample (index 49 of 100).
+
+    if (tlm_core_ws_samples_per_curve(ws) != 100) {
+        std::printf("    FAIL: samples_per_curve != 100\n");
+        ++failures;
+    }
     std::vector<double> ax(100), ay(100);
     tlm_core_ws_copy_a_x(ws, ax.data(), 100);
     tlm_core_ws_copy_a_y(ws, ay.data(), 100);
-    // Closest sample to θ1=0 is between indices 49 and 50; check 49.
-    std::printf("    curve A sample 49: (%+8.4f, %+8.4f)   (≈ end at θ1≈0, θ2=-π/2)\n",
-                ax[49], ay[49]);
-    std::printf("    curve A sample 99: (%+8.4f, %+8.4f)   (= end at θ1=+π/2, θ2=-π/2 → (1, 1))\n",
+    // Curve A endpoint: θ1=+π/2, θ2=-π/2  ->  end = (1, 1).
+    std::printf("    curve A sample 99: (%+8.4f, %+8.4f)  (expect (1, 1))\n",
                 ax[99], ay[99]);
+    if (std::fabs(ax[99] - 1.0) > 1e-6 || std::fabs(ay[99] - 1.0) > 1e-6) {
+        std::printf("    FAIL: curve A endpoint != (1, 1)\n");
+        ++failures;
+    }
     tlm_core_free_workspace(ws);
+
+    // Invalid input is rejected.
+    TlmPose dummy;
+    if (tlm_core_forward_kinematics(nullptr, 0.0, 0.0, &dummy)) {
+        std::printf("    FAIL: NULL config accepted by forward_kinematics\n");
+        ++failures;
+    }
 
     if (failures == 0) std::printf("\nALL OK.\n");
     else                std::printf("\nFAILURES: %d\n", failures);
