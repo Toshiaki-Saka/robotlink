@@ -11,6 +11,21 @@ inspected with an interactive Python visualizer.
 
 ![Arm tracking demo](docs/arm_animation.gif)
 
+> **Companion example — `examples/planar_2link`.** A dependency-light **planar
+> 2-link** sibling of the spatial 3-DOF arm (absorbed from the former `tlm`
+> repository, git history preserved) provides forward kinematics and
+> reachable-workspace boundary curves via a small C ABI core. It builds from this
+> root (no Eigen / no symbolic generation required):
+>
+> ```sh
+> cmake -S . -B build && cmake --build build --target tlm_core
+> ctest --test-dir build -R planar_2link_python --output-on-failure
+> cd gui/python && pip install -r requirements.txt
+> python gallery_app.py --example planar_2link
+> ```
+>
+> Disable with `-DROBOTLINK_BUILD_PLANAR_2LINK=OFF`.
+
 ---
 
 ## Why this project

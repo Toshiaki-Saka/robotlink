@@ -78,10 +78,28 @@ else()
     target_compile_options(robot_sim PRIVATE -Wall -Wextra -O2)
 endif()
 
+# ── Absorbed example: planar 2-link arm (former `tlm` repo) ──────────────────
+# Self-contained C ABI core (no Eigen / no generated dynamics), built from this
+# root so the shared GUI launcher and the cross-example test can find it.
+option(ROBOTLINK_BUILD_PLANAR_2LINK "Build the absorbed planar 2-link arm example" ON)
+if(ROBOTLINK_BUILD_PLANAR_2LINK)
+    add_subdirectory(examples/planar_2link/core)
+endif()
+
 # ── Tests ────────────────────────────────────────────────────────────────────
 if(ROBOTLINK_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
+
+    if(ROBOTLINK_BUILD_PLANAR_2LINK)
+        add_test(NAME planar_2link_python
+                 COMMAND ${Python3_EXECUTABLE}
+                         ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_planar_2link.py)
+        if(WIN32)
+            set_tests_properties(planar_2link_python PROPERTIES
+                ENVIRONMENT "PATH=$<TARGET_FILE_DIR:tlm_core>;$ENV{PATH}")
+        endif()
+    endif()
 endif()
 
 # ── Install ──────────────────────────────────────────────────────────────────
