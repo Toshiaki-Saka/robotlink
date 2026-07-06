@@ -1,30 +1,34 @@
 #Requires -Version 5.1
-<#
-.SYNOPSIS
-    RobotLink ビルド・シミュレーション・Python ビジュアライザー起動
-
-.PARAMETER BuildType
-    Release (既定) / Debug
-
-.PARAMETER SkipBuild
-    C++ シミュレーションのビルドをスキップ
-
-.PARAMETER SkipSim
-    シミュレーション実行をスキップ (既存 CSV を再利用)
-
-.PARAMETER SkipPyDeps
-    pip install をスキップ
-
-.PARAMETER Clean
-    build/ を削除してフルリビルド
-
-.EXAMPLE
-    .\build_and_run.ps1
-    .\build_and_run.ps1 -SkipBuild -SkipSim
-#>
+# build_and_run.ps1 — RobotLink (3-DOF ロボットアーム)
+# C++ シミュレーションコアをビルド＆実行し、3つのフロントエンドから「1つだけ」を
+# 選んで起動する。path-planning-classics の build_and_run.ps1 と同じ操作感。
+#
+# 実行フロー (3 ステップ):
+#   STEP 1  C++ シミュレーション (robot_sim) を CMake でビルド
+#           (初回のみ Python で動力学を導出しヘッダ生成。1〜3 分)
+#   STEP 2  robot_sim を実行し output/sim_results.csv を生成
+#   STEP 3  選んだフロントエンドを起動 (コアが書き出した CSV を読み込んで描画)
+#
+# 引数 Frontend … 1 = Qt6      (C++)      frontend_qt
+#                 2 = Avalonia (C#)       frontend_avalonia
+#                 3 = PyQt6    (Python)   frontend_python\visualizer_pyqt6.py
+#   ※ Qt6 / Avalonia は事前にビルドしておくこと (本スクリプトは起動のみ):
+#       Qt6      : frontend_qt\build\ で  cmake --build
+#       Avalonia : frontend_avalonia\RobotLinkAvalonia\ で  dotnet build -c Release
+#     PyQt6 は Python スクリプトを直接起動するため事前ビルド不要 (pip: PyQt6)。
+#
+# 使い方:
+#   .\build_and_run.ps1                       # 引数なし → 既定 (Qt6) で通し実行
+#   .\build_and_run.ps1 1                     # Qt6 で起動
+#   .\build_and_run.ps1 2                     # Avalonia で起動
+#   .\build_and_run.ps1 3                     # PyQt6 で起動
+#   .\build_and_run.ps1 3 -SkipBuild -SkipSim # 既存 CSV で PyQt6 のみ起動
+#   .\build_and_run.ps1 1 -BuildType Debug    # Qt6 / Debug ビルド
+#   .\build_and_run.ps1 -Clean                # build/ を消してフルリビルド
 param(
-    [ValidateSet("1","2","3","4","qt6","avalonia","pyqt6","matplotlib")]
-    [string] $Frontend   = "1",   # 1=Qt6  2=Avalonia  3=Qt6(alias)  4=matplotlib
+    # 1=Qt6 (C++) / 2=Avalonia (C#) / 3=PyQt6 (Python)
+    [ValidateSet("1","2","3","qt6","avalonia","pyqt6")]
+    [string] $Frontend   = "1",
     [string] $BuildType  = "Release",
     [switch] $SkipBuild,
     [switch] $SkipSim,
@@ -115,7 +119,7 @@ if (-not (Test-Path $csvPath)) {
 # ════════════════════════════════════════════════════════════════════════════
 switch ($Frontend) {
 
-    { $_ -in "1","3","qt6","pyqt6" } {
+    { $_ -in "1","qt6" } {
         Step "Qt6 ビジュアライザーを起動します"
         $qtExe = "$ROOT\frontend_qt\build\Release\robotlink_viz_qt.exe"
         if (-not (Test-Path $qtExe)) { Die "Qt6 実行ファイルが見つかりません: $qtExe`n先に frontend_qt\build\ で cmake --build してください。" }
@@ -131,13 +135,13 @@ switch ($Frontend) {
         Ok "Avalonia 起動: $avExe"
     }
 
-    { $_ -in "4","matplotlib" } {
-        Step "matplotlib ビジュアライザーを起動します"
+    { $_ -in "3","pyqt6" } {
+        Step "PyQt6 ビジュアライザーを起動します"
         Require "python"
-        $vizScript = "$ROOT\python\visualizer_matplotlib.py"
-        if (-not (Test-Path $vizScript)) { Die "python/visualizer_matplotlib.py が見つかりません" }
+        $vizScript = "$ROOT\frontend_python\visualizer_pyqt6.py"
+        if (-not (Test-Path $vizScript)) { Die "frontend_python/visualizer_pyqt6.py が見つかりません" }
         & python "$vizScript" "$csvPath"
-        Ok "matplotlib 終了"
+        Ok "PyQt6 終了"
     }
 
     default {
@@ -147,10 +151,9 @@ switch ($Frontend) {
 
 Write-Host ""
 Write-Host "使い方:" -ForegroundColor DarkCyan
-Write-Host "  .\build_and_run.ps1 -Frontend 1             # Qt6 C++ ビジュアライザー (既定)"
-Write-Host "  .\build_and_run.ps1 -Frontend 3             # Qt6 C++ ビジュアライザー (1 と同じ)"
-Write-Host "  .\build_and_run.ps1 -Frontend 2             # Avalonia C# ビジュアライザー"
-Write-Host "  .\build_and_run.ps1 -Frontend 4             # matplotlib (通常表示)"
-Write-Host "  .\build_and_run.ps1 -SkipBuild -SkipSim     # 既存 CSV でビジュアライザーのみ起動"
+Write-Host "  .\build_and_run.ps1 1                       # Qt6 C++ ビジュアライザー (既定)"
+Write-Host "  .\build_and_run.ps1 2                       # Avalonia C# ビジュアライザー"
+Write-Host "  .\build_and_run.ps1 3                       # PyQt6 (Python)"
+Write-Host "  .\build_and_run.ps1 3 -SkipBuild -SkipSim   # 既存 CSV でビジュアライザーのみ起動"
 Write-Host "  .\build_and_run.ps1 -Clean                  # フルリビルド"
 Write-Host ""

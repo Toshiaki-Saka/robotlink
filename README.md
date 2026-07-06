@@ -54,8 +54,14 @@ dependency at runtime.
 │   └── rk4.hpp                 # generic 4th-order Runge-Kutta integrator
 ├── src/main.cpp                # simulation entry point
 ├── python/
-│   ├── derive_and_export.py    # SymPy derivation → generated/dynamics_generated.hpp
-│   └── visualizer.py           # tkinter + matplotlib results viewer
+│   └── derive_and_export.py    # SymPy derivation → generated/dynamics_generated.hpp
+├── frontend_python/            # results viewers (default: matplotlib)
+│   ├── visualizer.py           # tkinter + matplotlib results viewer (default)
+│   ├── visualizer_matplotlib.py
+│   ├── visualizer_pyqt6.py
+│   └── visualizer_pyside.py
+├── frontend_qt/                # Qt6 C++ visualizer (CMake)
+├── frontend_avalonia/          # Avalonia C# visualizer (.NET 8)
 ├── tests/                      # physics-based regression tests (CTest)
 │   ├── test_harness.hpp        # tiny dependency-free test framework
 │   ├── test_rk4.cpp            # integrator vs. closed-form solutions
@@ -102,7 +108,7 @@ ctest --test-dir build --output-on-failure
 # build\Release\robot_sim.exe           # Windows / MSVC
 
 # 5. Visualize
-python python/visualizer.py
+python frontend_python/visualizer.py
 ```
 
 The first configure/build is slow because `derive_and_export.py` performs the
@@ -134,8 +140,8 @@ potential energy, and applies the Euler-Lagrange equation
 d/dt (∂L/∂q̇) − ∂L/∂q = τ
 ```
 
-to obtain the mass matrix `M(q)`, the Coriolis/centrifugal term `C(q,q̇)·q̇`,
-and the gravity vector `g(q)`. Common-subexpression elimination (`sympy.cse`)
+to obtain the mass matrix $M(q)$, the Coriolis/centrifugal term $C(q, \dot{q}) \cdot \dot{q}$,
+and the gravity vector $g(q)$. Common-subexpression elimination (`sympy.cse`)
 compresses the result, which is emitted as `compute_dynamics(...)` in
 `generated/dynamics_generated.hpp`.
 
@@ -151,14 +157,14 @@ The controller cancels the nonlinear dynamics and imposes linear error dynamics:
 τ = M(q)·[q̈_d + Kd·(q̇_d − q̇) + Kp·(q_d − q)] + C(q,q̇)·q̇ + g(q)
 ```
 
-which yields the closed-loop error equation `ë + Kd·ė + Kp·e = 0`. With
-`Kp = 80`, `Kd = 18` the closed-loop poles are at `s = −8, −10` (critically
+which yields the closed-loop error equation $\ddot{e} + K_d \cdot \dot{e} + K_p \cdot e = 0$. With
+$K_p = 80$, $K_d = 18$ the closed-loop poles are at $s = -8, -10$ (critically
 damped, no overshoot).
 
 ### 3. Integration (`include/rk4.hpp`)
 
 A generic fixed-step 4th-order Runge-Kutta integrator advances the state
-`[q, q̇]`. The arm has no contact or switching events, so the solution stays
+$[q, \dot{q}]$. The arm has no contact or switching events, so the solution stays
 smooth and a fixed step (`dt = 0.005 s`) is accurate enough — see
 [`docs/integration-notes.md`](docs/integration-notes.md) for the RK4-vs-adaptive
 discussion.
@@ -173,7 +179,7 @@ symbolic derivation evolves:
   oscillator, and a linear ramp against their closed-form solutions, and
   conserves the oscillator's energy.
 - **`test_dynamics`** — the mass matrix is symmetric and positive-definite, a
-  static pose is balanced exactly by `τ = g(q)`, forward dynamics inverts the
+  static pose is balanced exactly by $\tau = g(q)$, forward dynamics inverts the
   equations of motion, and the computed-torque controller drives the tracking
   error toward zero.
 
@@ -183,7 +189,7 @@ Run them with `ctest --test-dir build --output-on-failure`.
 
 Simulation parameters live in `include/sim_config.hpp`: link lengths and masses,
 time step, controller gains, and the reference trajectory
-`q_d,i(t) = offset_i + A_i·sin(w_i·t + φ_i)`. Edit and rebuild to experiment.
+$q_{d,i}(t) = offset_i + A_i \cdot \sin(w_i \cdot t + \varphi_i)$. Edit and rebuild to experiment.
 
 ## Roadmap
 

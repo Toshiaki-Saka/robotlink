@@ -198,13 +198,13 @@ if (Test-Path $csvPath) {
 # ── ビジュアライザー起動 ──────────────────────────────────────────────────────
 
 if (-not $SkipVisualize) {
-    $vizScript = Join-Path $Root "python\visualizer.py"
+    $vizScript = Join-Path $Root "frontend_python\visualizer.py"
     if (Test-Path $vizScript) {
         Write-Step "ビジュアライザーを起動しています..."
         Write-Host "  (ウィンドウを閉じるとスクリプトが終了します)" -ForegroundColor DarkGray
         & python $vizScript
     } else {
-        Write-Host "ビジュアライザー (python/visualizer.py) が見つかりません。スキップします。"
+        Write-Host "ビジュアライザー (frontend_python/visualizer.py) が見つかりません。スキップします。"
     }
 }
 
