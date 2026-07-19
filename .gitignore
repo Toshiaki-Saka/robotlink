@@ -6,7 +6,7 @@ _deps/
 
 # ── Scratch debug images ─────────────────────────────────────────────
 good.png
-問題.png
+bad.png
 
 # ── Generated code (produced at build time by derive_and_export.py) ───
 generated/
@@ -17,12 +17,12 @@ output/
 *.csv
 
 # ── Generated media (regenerate locally; keep repo small) ────────────
-# NOTE: a small demo GIF for the README may be committed under docs/
+# NOTE: a small demo GIF for the README may be committed under docs_en/
 *.gif
 *.png
 *.mp4
-!docs/*.gif
-!docs/*.png
+!docs_en/*.gif
+!docs_en/*.png
 
 # ── CMake ────────────────────────────────────────────────────────────
 CMakeCache.txt

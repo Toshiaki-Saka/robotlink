@@ -55,11 +55,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             var d = SimData.Load(path);
             _lastData = d;
             UpdateCharts(d);
-            StatusText = $"読込完了: {System.IO.Path.GetFileName(path)}  ({d.Count} 行)";
+            StatusText = $"Loaded: {System.IO.Path.GetFileName(path)}  ({d.Count} rows)";
         }
         catch (Exception ex)
         {
-            StatusText = $"読込失敗: {ex.Message}";
+            StatusText = $"Load failed: {ex.Message}";
         }
     }
 

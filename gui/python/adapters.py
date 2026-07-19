@@ -68,7 +68,7 @@ def run_planar_2link() -> RunResult:
     reach = float(np.max(np.hypot(np.concatenate([ws.a_x, ws.b_x]),
                                   np.concatenate([ws.a_y, ws.b_y]))))
     return RunResult(
-        "planar_2link", "平面2リンクアームの順運動学と到達領域",
+        "planar_2link", "Forward kinematics and reachable workspace of a planar 2-link arm",
         plots=[
             Plot("Arm poses (θ1 sweep)", "x", "y", pose_traces, equal_aspect=True),
             Plot("Reachable workspace boundary", "x", "y", ws_traces, equal_aspect=True),

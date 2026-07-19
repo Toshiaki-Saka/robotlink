@@ -15,7 +15,7 @@ frontend_python/*.pyc
 app_stdout.txt
 app_stderr.txt
 
-# Screenshots (コミット不要な作業用)
+# Screenshots (scratch working files, no need to commit)
 *.png
 
 # Visual Studio

@@ -76,7 +76,7 @@ public sealed class ChartControl : Control
         var series = Series;
         if (series is null || series.Count == 0 || series.All(s => s.Points.Length == 0))
         {
-            DrawPlaceholder(ctx, bounds, "(データなし)");
+            DrawPlaceholder(ctx, bounds, "(no data)");
             return;
         }
 

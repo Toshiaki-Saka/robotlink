@@ -68,7 +68,7 @@ public sealed class ArmAnimControl : Control
 
         if (_frames.Length == 0)
         {
-            var ph = MakeText("(データなし)", 11, Brushes.Gray);
+            var ph = MakeText("(no data)", 11, Brushes.Gray);
             ctx.DrawText(ph, new Point((Bounds.Width - ph.Width) / 2,
                                        (Bounds.Height - ph.Height) / 2));
             return;

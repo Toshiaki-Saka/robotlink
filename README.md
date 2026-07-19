@@ -1,5 +1,7 @@
 # RobotLink
 
+📖 **English** | [日本語 (Japanese)](README.ja.md)
+
 **Symbolic derivation → C++ code generation → simulation → visualization** for a
 3-DOF spatial robot arm.
 
@@ -9,7 +11,7 @@ optimized C++ header, and runs a computed-torque-controlled simulation in C++
 with [Eigen](https://eigen.tuxfamily.org/). Results are written to CSV and can be
 inspected with an interactive Python visualizer.
 
-![Arm tracking demo](docs/arm_animation.gif)
+![Arm tracking demo](docs_en/arm_animation.gif)
 
 > **Companion example — `examples/planar_2link`.** A dependency-light **planar
 > 2-link** sibling of the spatial 3-DOF arm (absorbed from the former `tlm`
@@ -66,11 +68,14 @@ dependency at runtime.
 │   ├── test_harness.hpp        # tiny dependency-free test framework
 │   ├── test_rk4.cpp            # integrator vs. closed-form solutions
 │   └── test_dynamics.cpp       # mass-matrix, gravity, controller properties
-├── docs/
+├── docs_en/                    # English documentation (+ shared images)
 │   ├── dynamics.md             # generalized coords, Lagrangian, EOM derivation, control
 │   ├── integration-notes.md    # RK4 vs. adaptive solvers — when each applies
 │   ├── arm_animation.gif       # demo animation
 │   └── tracking_plots.png      # sample tracking plots
+├── docs_ja/                    # Japanese documentation (日本語版)
+│   ├── dynamics.md
+│   └── integration-notes.md
 ├── generated/                  # (build output) auto-generated C++ header
 └── output/                     # (run output) sim_results.csv
 ```
@@ -115,6 +120,39 @@ The first configure/build is slow because `derive_and_export.py` performs the
 symbolic Euler-Lagrange derivation. Subsequent builds reuse the cached header
 unless the script changes.
 
+### Windows PowerShell helper scripts
+
+On Windows, two PowerShell scripts wrap the steps above so you don't have to run
+them by hand.
+
+**`run_sim.ps1`** — build, test, run the simulation, and open the default
+(matplotlib) visualizer in one shot:
+
+```powershell
+.\run_sim.ps1                   # normal build + test + run + visualize
+.\run_sim.ps1 -Clean            # remove build/ and do a full rebuild
+.\run_sim.ps1 -SkipTests        # skip the CTest run
+.\run_sim.ps1 -SkipVisualize    # build and run only, no visualizer
+.\run_sim.ps1 -UseSystemEigen   # use an installed Eigen instead of FetchContent
+```
+
+**`build_and_run.ps1`** — build and run the core, then launch exactly one of the
+three GUI frontends (Qt6 C++, Avalonia C#, or PyQt6 Python):
+
+```powershell
+.\build_and_run.ps1                       # default (Qt6), full run
+.\build_and_run.ps1 1                     # Qt6 (C++)       frontend_qt
+.\build_and_run.ps1 2                     # Avalonia (C#)   frontend_avalonia
+.\build_and_run.ps1 3                     # PyQt6 (Python)  frontend_python
+.\build_and_run.ps1 3 -SkipBuild -SkipSim # launch the visualizer only, using existing CSV
+.\build_and_run.ps1 1 -BuildType Debug    # Qt6 / Debug build
+.\build_and_run.ps1 -Clean                # full rebuild
+```
+
+The Qt6 and Avalonia frontends must be built beforehand (`build_and_run.ps1` only
+launches them); PyQt6 needs no prior build. See the header comment in each script
+for details.
+
 ### Build options
 
 | Option                        | Default | Effect                                        |
@@ -147,7 +185,7 @@ compresses the result, which is emitted as `compute_dynamics(...)` in
 
 The full derivation — generalized coordinates, kinematic model, kinetic/potential
 energy, Euler-Lagrange equations, and structured equations of motion — is documented
-in [`docs/dynamics.md`](docs/dynamics.md).
+in [`docs_en/dynamics.md`](docs_en/dynamics.md).
 
 ### 2. Computed-torque control (`include/controller.hpp`)
 
@@ -166,7 +204,7 @@ damped, no overshoot).
 A generic fixed-step 4th-order Runge-Kutta integrator advances the state
 $[q, \dot{q}]$. The arm has no contact or switching events, so the solution stays
 smooth and a fixed step (`dt = 0.005 s`) is accurate enough — see
-[`docs/integration-notes.md`](docs/integration-notes.md) for the RK4-vs-adaptive
+[`docs_en/integration-notes.md`](docs_en/integration-notes.md) for the RK4-vs-adaptive
 discussion.
 
 ## Testing

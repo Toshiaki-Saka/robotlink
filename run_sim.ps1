@@ -1,19 +1,19 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    RobotLink のビルド・テスト・シミュレーション実行を一括で行うスクリプト
+    One-shot script that builds, tests, and runs the RobotLink simulation.
 
 .PARAMETER SkipTests
-    CTest によるテストをスキップする
+    Skip the CTest test run.
 
 .PARAMETER SkipVisualize
-    Python ビジュアライザーの起動をスキップする
+    Skip launching the Python visualizer.
 
 .PARAMETER Clean
-    build/ を削除してフルリビルドする
+    Remove build/ and do a full rebuild.
 
 .PARAMETER UseSystemEigen
-    FetchContent を使わず、システムインストール済みの Eigen を使う
+    Use a system-installed Eigen instead of FetchContent.
 
 .EXAMPLE
     .\run_sim.ps1
@@ -31,7 +31,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# ── ヘルパー関数 ──────────────────────────────────────────────────────────────
+# ── Helper functions ──────────────────────────────────────────────────────────
 
 function Write-Header([string]$msg) {
     Write-Host ""
@@ -57,13 +57,13 @@ function Invoke-Step([string]$label, [scriptblock]$block) {
     Write-Step $label
     & $block
     if ($LASTEXITCODE -ne 0) {
-        Write-Fail "$label が失敗しました (終了コード $LASTEXITCODE)"
+        Write-Fail "$label failed (exit code $LASTEXITCODE)"
         exit $LASTEXITCODE
     }
-    Write-OK "$label 完了"
+    Write-OK "$label complete"
 }
 
-# ── プロジェクトルート ────────────────────────────────────────────────────────
+# ── Project root ──────────────────────────────────────────────────────────────
 
 $Root     = $PSScriptRoot
 $BuildDir = Join-Path $Root "build"
@@ -71,62 +71,62 @@ $OutDir   = Join-Path $Root "output"
 
 Set-Location $Root
 
-Write-Header "RobotLink ビルド & シミュレーション"
-Write-Host "プロジェクト: $Root"
-Write-Host "日時        : $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Write-Header "RobotLink build & simulation"
+Write-Host "Project : $Root"
+Write-Host "Date    : $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 
-# ── 前提ツールの確認 ──────────────────────────────────────────────────────────
+# ── Check for required tools ──────────────────────────────────────────────────
 
-Write-Step "前提ツールを確認しています..."
+Write-Step "Checking for required tools..."
 
 foreach ($tool in @("cmake", "python")) {
     if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
-        Write-Fail "'$tool' が PATH に見つかりません。インストールして再実行してください。"
+        Write-Fail "'$tool' not found on PATH. Please install it and re-run."
         exit 1
     }
     $ver = & $tool --version 2>&1 | Select-Object -First 1
     Write-OK "$tool : $ver"
 }
 
-# CMake バージョン確認 (3.20+)
+# Check CMake version (3.20+)
 $cmakeVerStr = (& cmake --version 2>&1 | Select-Object -First 1) -replace "cmake version ", ""
 $cmakeVer    = [version]$cmakeVerStr
 if ($cmakeVer -lt [version]"3.20") {
-    Write-Fail "CMake 3.20 以上が必要です (現在: $cmakeVerStr)"
+    Write-Fail "CMake 3.20 or newer is required (found: $cmakeVerStr)"
     exit 1
 }
 
-# ── Python パッケージの確認とインストール ─────────────────────────────────────
+# ── Check and install Python packages ─────────────────────────────────────────
 
-Write-Step "Python パッケージを確認しています..."
+Write-Step "Checking Python packages..."
 
 $reqFile = Join-Path $Root "requirements.txt"
 $missing = @()
 foreach ($pkg in @("sympy", "numpy", "pandas", "matplotlib")) {
     $check = & python -c "import $pkg" 2>&1
     if ($LASTEXITCODE -ne 0) { $missing += $pkg }
-    else { Write-OK "$pkg インポート OK" }
+    else { Write-OK "$pkg import OK" }
 }
 
 if ($missing.Count -gt 0) {
-    Write-Step "不足パッケージをインストールします: $($missing -join ', ')"
+    Write-Step "Installing missing packages: $($missing -join ', ')"
     & python -m pip install --quiet -r $reqFile
     if ($LASTEXITCODE -ne 0) {
-        Write-Fail "pip install が失敗しました"
+        Write-Fail "pip install failed"
         exit 1
     }
-    Write-OK "パッケージインストール完了"
+    Write-OK "Package installation complete"
 }
 
-# ── クリーンビルド ────────────────────────────────────────────────────────────
+# ── Clean build ───────────────────────────────────────────────────────────────
 
 if ($Clean -and (Test-Path $BuildDir)) {
-    Write-Step "build/ を削除しています..."
+    Write-Step "Removing build/..."
     Remove-Item -Recurse -Force $BuildDir
-    Write-OK "build/ 削除完了"
+    Write-OK "build/ removed"
 }
 
-# ── CMake 設定 ────────────────────────────────────────────────────────────────
+# ── CMake configure ───────────────────────────────────────────────────────────
 
 $cmakeArgs = @(
     "-B", $BuildDir,
@@ -136,28 +136,28 @@ $cmakeArgs = @(
 if ($UseSystemEigen)  { $cmakeArgs += "-DROBOTLINK_USE_SYSTEM_EIGEN=ON" }
 if ($SkipTests)       { $cmakeArgs += "-DROBOTLINK_BUILD_TESTS=OFF" }
 
-Invoke-Step "CMake 設定" {
+Invoke-Step "CMake configure" {
     & cmake @cmakeArgs
 }
 
-# ── ビルド ────────────────────────────────────────────────────────────────────
+# ── Build ─────────────────────────────────────────────────────────────────────
 
 $cpuCount = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
-Invoke-Step "CMake ビルド (並列度: $cpuCount)  ※初回は SymPy 導出で数分かかります" {
+Invoke-Step "CMake build (parallelism: $cpuCount)  (first build takes a few minutes for the SymPy derivation)" {
     & cmake --build $BuildDir --config Release --parallel $cpuCount
 }
 
-# ── テスト ────────────────────────────────────────────────────────────────────
+# ── Test ──────────────────────────────────────────────────────────────────────
 
 if (-not $SkipTests) {
-    Invoke-Step "CTest によるテスト実行" {
+    Invoke-Step "Run tests with CTest" {
         & ctest --test-dir $BuildDir --build-config Release --output-on-failure
     }
 }
 
-# ── 実行ファイルの検索 ────────────────────────────────────────────────────────
+# ── Locate the executable ─────────────────────────────────────────────────────
 
-Write-Step "シミュレーション実行ファイルを検索しています..."
+Write-Step "Locating the simulation executable..."
 
 $candidates = @(
     (Join-Path $BuildDir "Release\robot_sim.exe"),
@@ -167,19 +167,19 @@ $candidates = @(
 $simExe = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 
 if (-not $simExe) {
-    Write-Fail "robot_sim の実行ファイルが見つかりません。ビルドを確認してください。"
+    Write-Fail "robot_sim executable not found. Please check the build."
     exit 1
 }
-Write-OK "実行ファイル: $simExe"
+Write-OK "Executable: $simExe"
 
-# ── シミュレーション実行 ──────────────────────────────────────────────────────
+# ── Run the simulation ────────────────────────────────────────────────────────
 
 if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Force $OutDir | Out-Null }
 
 $csvPath = Join-Path $OutDir "sim_results.csv"
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
-Invoke-Step "シミュレーション実行" {
+Invoke-Step "Run the simulation" {
     & $simExe $OutDir
 }
 
@@ -187,34 +187,34 @@ $stopwatch.Stop()
 $elapsed = $stopwatch.Elapsed.ToString("mm\:ss\.ff")
 
 Write-Host ""
-Write-Host "シミュレーション完了 (経過時間: $elapsed)" -ForegroundColor Green
-Write-Host "結果CSV: $csvPath"
+Write-Host "Simulation complete (elapsed: $elapsed)" -ForegroundColor Green
+Write-Host "Result CSV: $csvPath"
 
 if (Test-Path $csvPath) {
     $lines = (Get-Content $csvPath | Measure-Object -Line).Lines
-    Write-Host "CSV 行数 (ヘッダー込み): $lines"
+    Write-Host "CSV rows (including header): $lines"
 }
 
-# ── ビジュアライザー起動 ──────────────────────────────────────────────────────
+# ── Launch the visualizer ─────────────────────────────────────────────────────
 
 if (-not $SkipVisualize) {
     $vizScript = Join-Path $Root "frontend_python\visualizer.py"
     if (Test-Path $vizScript) {
-        Write-Step "ビジュアライザーを起動しています..."
-        Write-Host "  (ウィンドウを閉じるとスクリプトが終了します)" -ForegroundColor DarkGray
+        Write-Step "Launching the visualizer..."
+        Write-Host "  (closing the window ends the script)" -ForegroundColor DarkGray
         & python $vizScript
     } else {
-        Write-Host "ビジュアライザー (frontend_python/visualizer.py) が見つかりません。スキップします。"
+        Write-Host "Visualizer (frontend_python/visualizer.py) not found. Skipping."
     }
 }
 
-# ── 完了 ──────────────────────────────────────────────────────────────────────
+# ── Done ──────────────────────────────────────────────────────────────────────
 
-Write-Header "全ステップ完了"
-Write-Host "出力ディレクトリ : $OutDir"
+Write-Header "All steps complete"
+Write-Host "Output directory : $OutDir"
 Write-Host ""
-Write-Host "再実行オプション:"
-Write-Host "  .\run_sim.ps1                   # 通常ビルド & 実行"
-Write-Host "  .\run_sim.ps1 -Clean            # クリーンビルド"
-Write-Host "  .\run_sim.ps1 -SkipTests        # テストをスキップ"
-Write-Host "  .\run_sim.ps1 -SkipVisualize    # ビジュアライザーをスキップ"
+Write-Host "Re-run options:"
+Write-Host "  .\run_sim.ps1                   # normal build & run"
+Write-Host "  .\run_sim.ps1 -Clean            # clean build"
+Write-Host "  .\run_sim.ps1 -SkipTests        # skip tests"
+Write-Host "  .\run_sim.ps1 -SkipVisualize    # skip the visualizer"

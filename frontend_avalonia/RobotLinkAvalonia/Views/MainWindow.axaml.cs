@@ -93,11 +93,11 @@ public partial class MainWindow : Window
 
         if (simExe is null)
         {
-            _vm.StatusText = "robot_sim.exe が見つかりません。先にビルドしてください。";
+            _vm.StatusText = "robot_sim.exe not found. Please build it first.";
             return;
         }
 
-        _vm.StatusText = "シミュレーションを実行中…";
+        _vm.StatusText = "Running simulation…";
 
         var outDir = Path.Combine(Path.GetDirectoryName(simExe)!, "..", "..", "output");
         outDir = Path.GetFullPath(outDir);
@@ -116,13 +116,13 @@ public partial class MainWindow : Window
             if (proc.ExitCode != 0)
             {
                 var err = await proc.StandardError.ReadToEndAsync();
-                _vm.StatusText = $"シミュレーション失敗: {err[..Math.Min(err.Length, 200)]}";
+                _vm.StatusText = $"Simulation failed: {err[..Math.Min(err.Length, 200)]}";
                 return;
             }
         }
         catch (Exception ex)
         {
-            _vm.StatusText = $"起動失敗: {ex.Message}";
+            _vm.StatusText = $"Launch failed: {ex.Message}";
             return;
         }
 
@@ -130,6 +130,6 @@ public partial class MainWindow : Window
         if (File.Exists(csvPath))
             _vm.LoadCsv(csvPath);
         else
-            _vm.StatusText = $"CSV が生成されませんでした: {csvPath}";
+            _vm.StatusText = $"CSV was not generated: {csvPath}";
     }
 }
