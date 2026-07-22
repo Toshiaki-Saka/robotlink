@@ -318,7 +318,7 @@ $$\|\mathbf{e}(t)\| \sim C_1\,e^{-8t} + C_2\,e^{-10t}$$
 The fixed-step RK4 integrator has a stability region that requires $|\lambda\,\Delta t| \lesssim 2.79$
 for real negative eigenvalues. With $\Delta t = 0.005\,\text{s}$:
 
-| Pole | $|\lambda\,\Delta t|$ | RK4 stable? |
+| Pole | $\lvert\lambda\,\Delta t\rvert$ | RK4 stable? |
 |------|----------------------|-------------|
 | $s = -8$ | $0.040$ | Yes — margin $70\times$ |
 | $s = -10$ | $0.050$ | Yes — margin $56\times$ |
