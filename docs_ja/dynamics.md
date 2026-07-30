@@ -33,7 +33,7 @@ $$R_z(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \co
 
 $$R_{12} = R_z(q_1)\,R_y(q_2), \qquad R_{123} = R_z(q_1)\,R_y(q_2+q_3)$$
 
-関節 2 と関節 3 はどちらも同一の軸 $R_z(q_1)\hat{y}$ まわりに回転するため、$R_{123}$ ではそれらのピッチ角は単純に加算される。
+関節 2 と関節 3 はどちらも同一の軸 $R_z(q_1)\hat{y}$ まわりに回転するため、 $R_{123}$ ではそれらのピッチ角は単純に加算される。
 
 ---
 
@@ -41,7 +41,7 @@ $$R_{12} = R_z(q_1)\,R_y(q_2), \qquad R_{123} = R_z(q_1)\,R_y(q_2+q_3)$$
 
 ### 3.1 重心位置
 
-各リンクは **一様な棒** としてモデル化され、その重心はローカル $x$ 軸に沿った中点に位置する。$\hat{x} = (1,0,0)^\top$ とする。
+各リンクは **一様な棒** としてモデル化され、その重心はローカル $x$ 軸に沿った中点に位置する。 $\hat{x} = (1,0,0)^\top$ とする。
 
 **リンク 2**（長さ $L_2$、質量 $m_2$）:
 
@@ -135,7 +135,7 @@ $U$ は $q_1$ に依存しないことに注意する — ヨー回転はリン�
 
 $$\frac{d}{dt}\!\left(\frac{\partial\mathcal{L}}{\partial\dot{q}_i}\right) - \frac{\partial\mathcal{L}}{\partial q_i} = \tau_i, \qquad i = 1,2,3$$
 
-$\mathcal{L} = T - U$ を展開し、$\partial U/\partial\dot{q}_i = 0$ を用いると:
+$\mathcal{L} = T - U$ を展開し、 $\partial U/\partial\dot{q}_i = 0$ を用いると:
 
 $$\frac{d}{dt}\!\left(\frac{\partial T}{\partial\dot{q}_i}\right) - \frac{\partial T}{\partial q_i} + \frac{\partial U}{\partial q_i} = \tau_i$$
 
@@ -150,7 +150,7 @@ EOM[i] = sp.trigsimp(raw)
 
 ## 6. 運動方程式
 
-運動学的な式を展開し、$\ddot{\mathbf{q}}$、$\dot{\mathbf{q}}\otimes\dot{\mathbf{q}}$、および $\mathbf{q}$ のみの部分ごとに項をまとめると、標準的なロボット動力学の形式が得られる。
+運動学的な式を展開し、 $\ddot{\mathbf{q}}$、 $\dot{\mathbf{q}}\otimes\dot{\mathbf{q}}$、および $\mathbf{q}$ のみの部分ごとに項をまとめると、標準的なロボット動力学の形式が得られる。
 
 $$\boxed{M(\mathbf{q})\,\ddot{\mathbf{q}} + C(\mathbf{q},\dot{\mathbf{q}})\,\dot{\mathbf{q}} + \mathbf{g}(\mathbf{q}) = \boldsymbol{\tau}}$$
 
@@ -169,7 +169,7 @@ M_mat[i, j] = sp.trigsimp(sp.diff(EOM_i[i], DDQ[j]))
 
 - **対称性**: $M = M^\top$、すなわち $M_{ij} = M_{ji}$
 - **正定値性**: すべての $\mathbf{v}\neq\mathbf{0}$ に対して $\mathbf{v}^\top M\,\mathbf{v} > 0$
-- **構成依存性**: $q_2$ と $q_3$ のみが現れ、$q_1$ は $M$ に入らない
+- **構成依存性**: $q_2$ と $q_3$ のみが現れ、 $q_1$ は $M$ に入らない
   （ヨー軸まわりのアームの慣性はどのヨー角でも同じである）
 
 対角要素は各関節に対する実効慣性を表し、非対角要素は関節間の動的な結合を表す。
@@ -211,9 +211,9 @@ $$g_2 = -\left(\frac{m_2}{2}+m_3\right)g L_2\cos q_2 - \frac{m_3\,g\,L_3}{2}\cos
 
 $$g_3 = -\frac{m_3\,g\,L_3}{2}\cos(q_2+q_3)$$
 
-$g_1 = 0$ となるのは、鉛直軸まわりの回転（$q_1$ は純粋なヨー）がどのリンクの高さも変えないためである。
+$g_1 = 0$ となるのは、鉛直軸まわりの回転（$`q_1`$ は純粋なヨー）がどのリンクの高さも変えないためである。
 
-**静的平衡のチェック**: $\boldsymbol{\tau} = \mathbf{g}(\mathbf{q})$、$\dot{\mathbf{q}} = \ddot{\mathbf{q}} = \mathbf{0}$ とすると、運動方程式が恒等的に満たされる。これは `tests/test_dynamics.cpp` でテストされている。
+**静的平衡のチェック**: $\boldsymbol{\tau} = \mathbf{g}(\mathbf{q})$、 $\dot{\mathbf{q}} = \ddot{\mathbf{q}} = \mathbf{0}$ とすると、運動方程式が恒等的に満たされる。これは `tests/test_dynamics.cpp` でテストされている。
 
 ---
 
@@ -275,7 +275,7 @@ $K_p = k_p I$ かつ $K_d = k_d I$ であるため、誤差ダイナミクスは
 
 $$s^2 + k_d\,s + k_p = 0$$
 
-デフォルトゲイン $k_p = 80$、$k_d = 18$ では:
+デフォルトゲイン $k_p = 80$、 $k_d = 18$ では:
 
 $$s^2 + 18s + 80 = (s+8)(s+10) = 0 \implies s_{1,2} = -8,\;-10$$
 
@@ -291,7 +291,7 @@ $$\|\mathbf{e}(t)\| \sim C_1\,e^{-8t} + C_2\,e^{-10t}$$
 
 ### 8.4 閉ループ極における RK4 の安定性
 
-固定ステップの RK4 積分器は、実負の固有値に対して $|\lambda\,\Delta t| \lesssim 2.79$ を要求する安定領域を持つ。$\Delta t = 0.005\,\text{s}$ では:
+固定ステップの RK4 積分器は、実負の固有値に対して $|\lambda\,\Delta t| \lesssim 2.79$ を要求する安定領域を持つ。 $\Delta t = 0.005\,\text{s}$ では:
 
 | 極 | $\lvert\lambda\,\Delta t\rvert$ | RK4 安定か? |
 |------|----------------------|-------------|
@@ -337,7 +337,7 @@ $$k_4 = f\!\left(\mathbf{x}_n + \Delta t\,k_3,\; t_n + \Delta t\right)$$
 
 $$\mathbf{x}_{n+1} = \mathbf{x}_n + \frac{\Delta t}{6}\!\left(k_1 + 2k_2 + 2k_3 + k_4\right)$$
 
-大域打ち切り誤差は $O(\Delta t^4)$ である。$\Delta t = 0.005\,\text{s}$ で $T = 8\,\text{s}$ にわたって積分すると、積分器は 1,600 ステップを踏み、$f$ をちょうど 6,400 回呼び出す。
+大域打ち切り誤差は $O(\Delta t^4)$ である。 $\Delta t = 0.005\,\text{s}$ で $T = 8\,\text{s}$ にわたって積分すると、積分器は 1,600 ステップを踏み、 $f$ をちょうど 6,400 回呼び出す。
 
 ---
 
