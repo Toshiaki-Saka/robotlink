@@ -13,7 +13,9 @@ All expressions correspond directly to `python/derive_and_export.py` (symbolic d
 
 The arm has 3 revolute joints. The generalized coordinate vector is
 
-$$\mathbf{q} = \begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix} \in \mathbb{R}^3, \qquad \dot{\mathbf{q}} = \frac{d\mathbf{q}}{dt}, \qquad \ddot{\mathbf{q}} = \frac{d^2\mathbf{q}}{dt^2}$$
+```math
+\mathbf{q} = \begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix} \in \mathbb{R}^3, \qquad \dot{\mathbf{q}} = \frac{d\mathbf{q}}{dt}, \qquad \ddot{\mathbf{q}} = \frac{d^2\mathbf{q}}{dt^2}
+```
 
 | Symbol | Joint type | Axis | Physical meaning |
 |--------|-----------|------|-----------------|
@@ -30,7 +32,9 @@ so this is a **yaw–pitch–pitch** configuration.
 
 The two elementary rotation matrices used are:
 
-$$R_z(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad R_y(\theta) = \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix}$$
+```math
+R_z(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad R_y(\theta) = \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix}
+```
 
 The orientation of each link in the world frame is:
 
@@ -50,19 +54,27 @@ its local $x$-axis. Let $\hat{x} = (1,0,0)^\top$.
 
 **Link 2** (length $L_2$, mass $m_2$):
 
-$$\mathbf{p}_{c2} = R_{12}\,\frac{L_2}{2}\,\hat{x} = \frac{L_2}{2} \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}$$
+```math
+\mathbf{p}_{c2} = R_{12}\,\frac{L_2}{2}\,\hat{x} = \frac{L_2}{2} \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}
+```
 
 **Link 3** (length $L_3$, mass $m_3$): the origin of link 3 is at the distal end of link 2,
 
-$$\mathbf{p}_{c3} = R_{12}\,L_2\,\hat{x} + R_{123}\,\frac{L_3}{2}\,\hat{x} = L_2\begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix} + \frac{L_3}{2}\begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}$$
+```math
+\mathbf{p}_{c3} = R_{12}\,L_2\,\hat{x} + R_{123}\,\frac{L_3}{2}\,\hat{x} = L_2\begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix} + \frac{L_3}{2}\begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}
+```
 
 ### 3.2 Forward Kinematics (End-Effector)
 
 The joint positions (implemented in `robot_arm.hpp`):
 
-$$\mathbf{p}_\text{elbow} = L_2 \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}$$
+```math
+\mathbf{p}_\text{elbow} = L_2 \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}
+```
 
-$$\mathbf{p}_\text{hand} = \mathbf{p}_\text{elbow} + L_3 \begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}$$
+```math
+\mathbf{p}_\text{hand} = \mathbf{p}_\text{elbow} + L_3 \begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}
+```
 
 ### 3.3 Center-of-Mass Velocities
 
@@ -76,7 +88,9 @@ These are computed symbolically by SymPy (`sp.diff(p_c2, t)`, `sp.diff(p_c3, t)`
 
 Define the two joint axes in the world frame:
 
-$$\hat{z} = \begin{pmatrix}0\\0\\1\end{pmatrix}, \qquad \hat{y}_\text{rot} = R_z(q_1)\begin{pmatrix}0\\1\\0\end{pmatrix} = \begin{pmatrix}-\sin q_1\\\cos q_1\\0\end{pmatrix}$$
+```math
+\hat{z} = \begin{pmatrix}0\\0\\1\end{pmatrix}, \qquad \hat{y}_\text{rot} = R_z(q_1)\begin{pmatrix}0\\1\\0\end{pmatrix} = \begin{pmatrix}-\sin q_1\\\cos q_1\\0\end{pmatrix}
+```
 
 Note that $\hat{z} \perp \hat{y}_\text{rot}$ (orthonormal pair).
 
@@ -89,7 +103,9 @@ $$\boldsymbol{\omega}_3 = \dot{q}_1\,\hat{z} + (\dot{q}_2+\dot{q}_3)\,\hat{y}_\t
 
 The **longitudinal axes** of the links (along each rod's length in the world frame) are:
 
-$$\hat{a}_2 = R_{12}\,\hat{x} = \begin{pmatrix}\cos q_1\cos q_2\\\sin q_1\cos q_2\\-\sin q_2\end{pmatrix}, \qquad \hat{a}_3 = R_{123}\,\hat{x} = \begin{pmatrix}\cos q_1\cos(q_2+q_3)\\\sin q_1\cos(q_2+q_3)\\-\sin(q_2+q_3)\end{pmatrix}$$
+```math
+\hat{a}_2 = R_{12}\,\hat{x} = \begin{pmatrix}\cos q_1\cos q_2\\\sin q_1\cos q_2\\-\sin q_2\end{pmatrix}, \qquad \hat{a}_3 = R_{123}\,\hat{x} = \begin{pmatrix}\cos q_1\cos(q_2+q_3)\\\sin q_1\cos(q_2+q_3)\\-\sin(q_2+q_3)\end{pmatrix}
+```
 
 ---
 
@@ -250,7 +266,9 @@ d.M.llt().solve(tau - d.Cdq - d.gv)
 
 The full 6-dimensional state vector for integration is:
 
-$$\mathbf{x} = \begin{pmatrix}\mathbf{q}\\\dot{\mathbf{q}}\end{pmatrix} \in \mathbb{R}^6, \qquad \dot{\mathbf{x}} = f(\mathbf{x},t) = \begin{pmatrix}\dot{\mathbf{q}}\\M(\mathbf{q})^{-1}\!\left[\boldsymbol{\tau}(t,\mathbf{q},\dot{\mathbf{q}}) - C\dot{\mathbf{q}} - \mathbf{g}\right]\end{pmatrix}$$
+```math
+\mathbf{x} = \begin{pmatrix}\mathbf{q}\\\dot{\mathbf{q}}\end{pmatrix} \in \mathbb{R}^6, \qquad \dot{\mathbf{x}} = f(\mathbf{x},t) = \begin{pmatrix}\dot{\mathbf{q}}\\M(\mathbf{q})^{-1}\!\left[\boldsymbol{\tau}(t,\mathbf{q},\dot{\mathbf{q}}) - C\dot{\mathbf{q}} - \mathbf{g}\right]\end{pmatrix}
+```
 
 ---
 

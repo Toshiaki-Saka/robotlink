@@ -11,7 +11,9 @@
 
 このアームは 3 個の回転関節を持つ。一般化座標ベクトルは次のとおりである。
 
-$$\mathbf{q} = \begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix} \in \mathbb{R}^3, \qquad \dot{\mathbf{q}} = \frac{d\mathbf{q}}{dt}, \qquad \ddot{\mathbf{q}} = \frac{d^2\mathbf{q}}{dt^2}$$
+```math
+\mathbf{q} = \begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix} \in \mathbb{R}^3, \qquad \dot{\mathbf{q}} = \frac{d\mathbf{q}}{dt}, \qquad \ddot{\mathbf{q}} = \frac{d^2\mathbf{q}}{dt^2}
+```
 
 | 記号 | 関節タイプ | 軸 | 物理的意味 |
 |--------|-----------|------|-----------------|
@@ -27,7 +29,9 @@ $$\mathbf{q} = \begin{pmatrix} q_1 \\ q_2 \\ q_3 \end{pmatrix} \in \mathbb{R}^3,
 
 用いる基本回転行列は次の 2 つである。
 
-$$R_z(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad R_y(\theta) = \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix}$$
+```math
+R_z(\theta) = \begin{pmatrix} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{pmatrix}, \qquad R_y(\theta) = \begin{pmatrix} \cos\theta & 0 & \sin\theta \\ 0 & 1 & 0 \\ -\sin\theta & 0 & \cos\theta \end{pmatrix}
+```
 
 ワールド座標系における各リンクの姿勢は次のとおりである。
 
@@ -45,19 +49,27 @@ $$R_{12} = R_z(q_1)\,R_y(q_2), \qquad R_{123} = R_z(q_1)\,R_y(q_2+q_3)$$
 
 **リンク 2**（長さ $L_2$、質量 $m_2$）:
 
-$$\mathbf{p}_{c2} = R_{12}\,\frac{L_2}{2}\,\hat{x} = \frac{L_2}{2} \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}$$
+```math
+\mathbf{p}_{c2} = R_{12}\,\frac{L_2}{2}\,\hat{x} = \frac{L_2}{2} \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}
+```
 
 **リンク 3**（長さ $L_3$、質量 $m_3$）: リンク 3 の原点はリンク 2 の末端にある。
 
-$$\mathbf{p}_{c3} = R_{12}\,L_2\,\hat{x} + R_{123}\,\frac{L_3}{2}\,\hat{x} = L_2\begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix} + \frac{L_3}{2}\begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}$$
+```math
+\mathbf{p}_{c3} = R_{12}\,L_2\,\hat{x} + R_{123}\,\frac{L_3}{2}\,\hat{x} = L_2\begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix} + \frac{L_3}{2}\begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}
+```
 
 ### 3.2 順運動学（エンドエフェクタ）
 
 関節位置（`robot_arm.hpp` に実装）:
 
-$$\mathbf{p}_\text{elbow} = L_2 \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}$$
+```math
+\mathbf{p}_\text{elbow} = L_2 \begin{pmatrix} \cos q_1\cos q_2 \\ \sin q_1\cos q_2 \\ -\sin q_2 \end{pmatrix}
+```
 
-$$\mathbf{p}_\text{hand} = \mathbf{p}_\text{elbow} + L_3 \begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}$$
+```math
+\mathbf{p}_\text{hand} = \mathbf{p}_\text{elbow} + L_3 \begin{pmatrix} \cos q_1\cos(q_2+q_3) \\ \sin q_1\cos(q_2+q_3) \\ -\sin(q_2+q_3) \end{pmatrix}
+```
 
 ### 3.3 重心速度
 
@@ -71,7 +83,9 @@ $$\dot{\mathbf{p}}_{c2} = \frac{d}{dt}\left[R_{12}\,\frac{L_2}{2}\,\hat{x}\right
 
 ワールド座標系における 2 つの関節軸を次のように定義する。
 
-$$\hat{z} = \begin{pmatrix}0\\0\\1\end{pmatrix}, \qquad \hat{y}_\text{rot} = R_z(q_1)\begin{pmatrix}0\\1\\0\end{pmatrix} = \begin{pmatrix}-\sin q_1\\\cos q_1\\0\end{pmatrix}$$
+```math
+\hat{z} = \begin{pmatrix}0\\0\\1\end{pmatrix}, \qquad \hat{y}_\text{rot} = R_z(q_1)\begin{pmatrix}0\\1\\0\end{pmatrix} = \begin{pmatrix}-\sin q_1\\\cos q_1\\0\end{pmatrix}
+```
 
 $\hat{z} \perp \hat{y}_\text{rot}$（正規直交対）であることに注意する。
 
@@ -83,7 +97,9 @@ $$\boldsymbol{\omega}_3 = \dot{q}_1\,\hat{z} + (\dot{q}_2+\dot{q}_3)\,\hat{y}_\t
 
 リンクの **長手軸**（ワールド座標系における各棒の長さ方向）は次のとおりである。
 
-$$\hat{a}_2 = R_{12}\,\hat{x} = \begin{pmatrix}\cos q_1\cos q_2\\\sin q_1\cos q_2\\-\sin q_2\end{pmatrix}, \qquad \hat{a}_3 = R_{123}\,\hat{x} = \begin{pmatrix}\cos q_1\cos(q_2+q_3)\\\sin q_1\cos(q_2+q_3)\\-\sin(q_2+q_3)\end{pmatrix}$$
+```math
+\hat{a}_2 = R_{12}\,\hat{x} = \begin{pmatrix}\cos q_1\cos q_2\\\sin q_1\cos q_2\\-\sin q_2\end{pmatrix}, \qquad \hat{a}_3 = R_{123}\,\hat{x} = \begin{pmatrix}\cos q_1\cos(q_2+q_3)\\\sin q_1\cos(q_2+q_3)\\-\sin(q_2+q_3)\end{pmatrix}
+```
 
 ---
 
@@ -231,7 +247,9 @@ d.M.llt().solve(tau - d.Cdq - d.gv)
 
 積分に用いる完全な 6 次元状態ベクトルは次のとおりである。
 
-$$\mathbf{x} = \begin{pmatrix}\mathbf{q}\\\dot{\mathbf{q}}\end{pmatrix} \in \mathbb{R}^6, \qquad \dot{\mathbf{x}} = f(\mathbf{x},t) = \begin{pmatrix}\dot{\mathbf{q}}\\M(\mathbf{q})^{-1}\!\left[\boldsymbol{\tau}(t,\mathbf{q},\dot{\mathbf{q}}) - C\dot{\mathbf{q}} - \mathbf{g}\right]\end{pmatrix}$$
+```math
+\mathbf{x} = \begin{pmatrix}\mathbf{q}\\\dot{\mathbf{q}}\end{pmatrix} \in \mathbb{R}^6, \qquad \dot{\mathbf{x}} = f(\mathbf{x},t) = \begin{pmatrix}\dot{\mathbf{q}}\\M(\mathbf{q})^{-1}\!\left[\boldsymbol{\tau}(t,\mathbf{q},\dot{\mathbf{q}}) - C\dot{\mathbf{q}} - \mathbf{g}\right]\end{pmatrix}
+```
 
 ---
 
