@@ -31,6 +31,19 @@ struct CtrlGains {
 };
 
 // Desired trajectory: q_d_i(t) = offset_i + A_i * sin(w_i * t + phi_i)
+//
+// Demo intent (see docs_en/demo-scenario.md): every joint moves at once, but at
+// a *different* frequency (ratio 4:5:6, so the pattern only repeats after
+// 31.4 s). Simultaneous, detuned motion keeps the velocity-dependent Coriolis /
+// centrifugal term and the pose-dependent mass matrix excited for the whole run,
+// which is what makes this a real test of the generated dynamics. A sine is also
+// C-infinity, so ddq_d exists in closed form for the computed-torque feedforward.
+//
+// The ranges below are chosen to stay inside the workspace and away from
+// singularities:
+//   q1 (shoulder yaw)   -0.60 .. +0.60 rad   (+-34 deg sweep)
+//   q2 (shoulder pitch) -0.80 .. +0.20 rad   (sweeps the gravity load)
+//   q3 (elbow)          +0.10 .. +1.50 rad   (never reaches 0 = fully extended)
 struct TrajectoryParams {
     Eigen::Vector3d A   = (Eigen::Vector3d() << 0.6, 0.5, 0.7).finished();
     Eigen::Vector3d w   = (Eigen::Vector3d() << 0.8, 1.0, 1.2).finished();

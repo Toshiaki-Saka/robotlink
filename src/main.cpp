@@ -33,6 +33,12 @@ int main(int argc, char* argv[]) {
     const int N = static_cast<int>(sim.t_end / sim.dt) + 1;
 
     // State: [q1, q2, q3, dq1, dq2, dq3]
+    //
+    // Deliberately started away from the reference: q_d(0) = [0, 0.054, 1.5] rad,
+    // so the arm begins at rest with an error of [-0.2, +0.15, +1.2] rad (~0.57 m
+    // of hand-position error). The resulting transient is the point of the demo -
+    // it shows the closed-loop error dynamics e'' + Kd*e' + Kp*e = 0 decaying with
+    // no overshoot before steady tracking takes over. See docs_en/demo-scenario.md.
     Vec6 state;
     state << 0.2, -0.1, 0.3, 0.0, 0.0, 0.0;
 

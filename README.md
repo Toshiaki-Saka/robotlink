@@ -13,6 +13,29 @@ inspected with an interactive Python visualizer.
 
 ![Arm tracking demo](docs_en/arm_animation.gif)
 
+### What the demo is doing
+
+The arm above is not replaying a recorded motion — it is **tracking a commanded
+trajectory it starts out badly wrong on**. Each joint is told to follow its own
+sine wave (base yaw ±34°, shoulder pitch, elbow flexing between nearly straight
+and a right angle), all at once but at *different* frequencies, so the hand
+sweeps a non-repeating 3D path and the arm never settles into a symmetric pose.
+That matters: detuned, simultaneous joint motion is what keeps the
+velocity-dependent Coriolis/centrifugal terms and the pose-dependent mass matrix
+alive throughout the run — exactly the terms that are painful to derive by hand
+and the reason this project derives them symbolically.
+
+The simulation then starts the arm **0.57 m away from where it is supposed to
+be** (a 1.2 rad elbow error), so the first half-second is a visible convergence
+transient, after which the computed-torque controller holds the reference to
+integration round-off. In short, the demo answers two questions at once: *is the
+generated dynamics correct*, and *does the controller kill an initial error
+without overshoot and then track exactly?*
+
+Full breakdown — the trajectory parameters, why each was chosen, what a good
+result looks like, and how to turn it into your own experiment — in
+[`docs_en/demo-scenario.md`](docs_en/demo-scenario.md).
+
 > **Companion example — `examples/planar_2link`.** A dependency-light **planar
 > 2-link** sibling of the spatial 3-DOF arm (absorbed from the former `tlm`
 > repository, git history preserved) provides forward kinematics and
@@ -69,11 +92,13 @@ dependency at runtime.
 │   ├── test_rk4.cpp            # integrator vs. closed-form solutions
 │   └── test_dynamics.cpp       # mass-matrix, gravity, controller properties
 ├── docs_en/                    # English documentation (+ shared images)
+│   ├── demo-scenario.md        # what the demo motion is and why it was chosen
 │   ├── dynamics.md             # generalized coords, Lagrangian, EOM derivation, control
 │   ├── integration-notes.md    # RK4 vs. adaptive solvers — when each applies
 │   ├── arm_animation.gif       # demo animation
 │   └── tracking_plots.png      # sample tracking plots
 ├── docs_ja/                    # Japanese documentation (日本語版)
+│   ├── demo-scenario.md
 │   ├── dynamics.md
 │   └── integration-notes.md
 ├── generated/                  # (build output) auto-generated C++ header
@@ -227,7 +252,9 @@ Run them with `ctest --test-dir build --output-on-failure`.
 
 Simulation parameters live in `include/sim_config.hpp`: link lengths and masses,
 time step, controller gains, and the reference trajectory
-$q_{d,i}(t) = offset_i + A_i \cdot \sin(w_i \cdot t + \varphi_i)$. Edit and rebuild to experiment.
+$q_{d,i}(t) = offset_i + A_i \cdot \sin(w_i \cdot t + \varphi_i)$. Edit and rebuild to experiment —
+[`docs_en/demo-scenario.md`](docs_en/demo-scenario.md) explains what the current
+values were chosen for and suggests variations worth trying.
 
 ## Roadmap
 
